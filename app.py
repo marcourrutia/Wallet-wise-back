@@ -13,12 +13,17 @@ from sqlalchemy import func
 from unidecode import unidecode
 from flask_mail import Mail, Message
 import requests
+from dotenv import load_dotenv
 
+load_dotenv()
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///wallet-wise.db"
-app.config["JWT_SECRET_KEY"] = "secret_key"
-app.config["SECRET_KEY"] = "contrasena-super-segura"
+
+
+
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
+app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
+app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 JWTManager(app)
 bcrypt = Bcrypt(app)
 db.init_app(app)
