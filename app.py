@@ -38,7 +38,9 @@ app.config["MAIL_USERNAME"] = "walletwise02@gmail.com"
 app.config["MAIL_PASSWORD"] = "potl dfde zjcp ugvs"
 mail= Mail(app)
 
-
+@app.route("/", methods=["GET"])
+def home():
+    return "Bienvenido a mi Back 🚀"
 
 @app.route("/user", methods=["POST"])
 def user():
