@@ -19,8 +19,6 @@ load_dotenv()
 
 app = Flask(__name__)
 
-
-
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
@@ -29,6 +27,8 @@ bcrypt = Bcrypt(app)
 db.init_app(app)
 Migrate(app, db)
 CORS(app)
+
+OPENAI_API_KEY = os.getenv("OPENAI_TOKEN")
 
 #configuración de mail
 app.config["MAIL_SERVER"] = 'smtp.gmail.com'
@@ -607,6 +607,36 @@ def send_email_goal_ok(goal_name, recipient_email):
     mail.send(msg)
 
     return "Email sent", 200
+
+@app.route("/chatgpt", methods=["POST"])
+def send_prompt():
+    try:
+        data = request.json
+        instruction = data.get("instruction")
+        prompt = data.get("prompt")
+        
+        headers = {
+            "Authorization": f"Bearer {OPENAI_API_KEY}",
+            "Content-Type": "application/json",
+        }
+        
+        payload = {
+            "model": "gpt-4o-mini",
+            "messages": [
+                {"role": "system", "content": instruction},
+                {"role": "user", "content": prompt},
+            ],
+            "max_tokens": 200,
+        }
+        
+        response = requests.post("https://api.openai.com/v1/chat/completions", json=payload, headers=headers)
+        response_data = response.json()
+
+        return jsonify({"response": response_data["choices"][0]["message"]["content"]})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
 
 if __name__ == "__main__":
     app.run(host="localhost", port=5050, debug=True)
