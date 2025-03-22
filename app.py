@@ -19,14 +19,27 @@ load_dotenv()
 
 app = Flask(__name__)
 
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
+token_db = os.getenv("TOKEN_DB")
+app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite+libsql://db-wallet-wise-marcourrutia.turso.io?authToken={token_db}"
+app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+    "pool_pre_ping": True,
+    "pool_recycle": 300,
+    "connect_args": {"check_same_thread": False}
+}
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
+
 JWTManager(app)
 bcrypt = Bcrypt(app)
 db.init_app(app)
 Migrate(app, db)
 CORS(app)
+
+# Configurar compatibilidad con SQLite
+with app.app_context():
+    if db.engine.url.drivername == "libsql":
+        from sqlalchemy.dialects.sqlite import JSON
+        db.configure_mappers()
 
 OPENAI_API_KEY = os.getenv("OPENAI_TOKEN")
 
