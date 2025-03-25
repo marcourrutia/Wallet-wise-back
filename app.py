@@ -20,7 +20,8 @@ load_dotenv()
 app = Flask(__name__)
 
 token_db = os.getenv("TOKEN_DB")
-app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite+libsql://db-wallet-wise-marcourrutia.turso.io?authToken={token_db}"
+""" app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite+libsql://db-wallet-wise-marcourrutia.turso.io?authToken={token_db}" """
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite+libsql://db-wallet-wise-marcourrutia.turso.io?auth=eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3NDI5MzM4MzEsImlkIjoiMGZkZWQ1NjEtZjMwNy00MGVkLWIzM2ItY2Q2YWEzOTNhYTdmIiwicmlkIjoiZDA1ZGE4MDQtZjQ5My00ZmQ5LWIwMGMtNGY4ZTlhNzYxNjIwIn0.Olpk0IrYpXTzN8gypkWK2QceuUFyy4XTEM8NFp58kMuBzmBeYwgTMfZP36GYXJHuX9FxF37kI2Pm8JPwC9PWAg"
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_pre_ping": True,
     "pool_recycle": 300,
@@ -33,7 +34,8 @@ JWTManager(app)
 bcrypt = Bcrypt(app)
 db.init_app(app)
 Migrate(app, db)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
+""" CORS(app) """
 
 # Configurar compatibilidad con SQLite
 with app.app_context():
