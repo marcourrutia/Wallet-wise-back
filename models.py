@@ -68,7 +68,7 @@ class Transaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200))
     category_id = db.Column(db.Integer, db.ForeignKey("category.id"))
-    movement = db.relationship("Movement")  
+    movements = db.relationship("Movement", back_populates="transaction")  
 
     def serialize(self):
         return {
@@ -86,7 +86,7 @@ class Movement(db.Model):
     account_id = db.Column(db.Integer, db.ForeignKey("account.id"))
     transaction_id = db.Column(db.Integer, db.ForeignKey("transaction.id"))
     movement_goal = db.relationship("Movement_goal")
-    transaction = db.relationship("Transaction", uselist=False)
+    transaction = db.relationship("Transaction", back_populates="movements")
 
     def serialize(self):
         return {
